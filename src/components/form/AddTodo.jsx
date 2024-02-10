@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 import Modal from "react-bootstrap/Modal";
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { toast } from "react-toastify";
  
 function AddTodo({ setTodo, todo}) {
     const [validated, setValidated] = useState(false);
@@ -34,10 +35,19 @@ function AddTodo({ setTodo, todo}) {
           const docRef = await addDoc(collection(db, "todos"), {
              ...newTodo
           });
+
+          const currentDate = new Date();
+          const newD = currentDate.toISOString().substring(0, 10);
+
+          console.log(newD, "+", date);
+          window.location.reload();
+
+          if (newD === date) {
+                toast.success(todo)
+          }
           console.log("Document written with ID: ", docRef.id);
         //   console.log(Date)
-          window.location.reload();
-        } catch (e) {
+         } catch (e) {
           console.error("Error adding document: ", e);
         }
       };
