@@ -8,13 +8,15 @@ import AddTodo from "./form/AddTodo";
 import DeleteTodo from "./form/DeleteTodo";
 import EditTodo from "./form/EditTodo";
 import SearchBar from "./SearchBar";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 
  const TodoList = () => {
-    const [todo, setTodo] = useState("");
-    const [todos, setTodos] = useState([]);
+   const [todoName, setTodo] = useState("");
+   const [todos, setTodos] = useState([]);
    const [show, setShow] = useState(false);
-  const [query, setQuery] = useState("");
-  const [order, setOrder] = useState("ASC");
+   const [query, setQuery] = useState("");
+   const [order, setOrder] = useState("ASC");
 
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
@@ -38,6 +40,26 @@ import SearchBar from "./SearchBar";
         fetchPost();
     }, [])
 
+
+const sortASC = () => {
+  if (order === "ASC") {
+    const sorted = [...todos].sort((a, b) =>
+      a["todo"].toLowerCase() > b["todo"].toLowerCase() ? 1 : -1
+    );
+    setTodos(sorted);
+    setOrder("DSC");
+  }
+};
+
+const sortDSC = () => {
+  if (order === "DSC") {
+    const sorted = [...todos].sort((a, b) =>
+      a["todo"].toLowerCase() < b["todo"].toLowerCase() ? 1 : -1
+    );
+    setTodos(sorted);
+    setOrder("ASC");
+  }
+};
  
     return (
       <section className="todo-container bg-grey">
@@ -50,9 +72,17 @@ import SearchBar from "./SearchBar";
               aria-hidden="true"
             ></i>
             <Modal show={show} onHide={handleClose}>
-              <AddTodo setTodo={setTodo} todo={todo} />
+              <AddTodo setTodo={setTodo} todo={todoName} />
             </Modal>
           </div>
+          <DropdownButton
+            className="m-5"
+            id="dropdown-basic-button"
+            title="sort items"
+          >
+            <Dropdown.Item onClick={() => sortASC()}>ASC</Dropdown.Item>
+            <Dropdown.Item onClick={() => sortDSC()}>DSC</Dropdown.Item>
+          </DropdownButton>
           <SearchBar placeholder={"Search Todo"} setQuery={setQuery} />
 
           <div className="todo-content ">
