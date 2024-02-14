@@ -1,63 +1,82 @@
+import "../../App.css";
+
 import { useState } from "react";
 import { Container } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import Modal from "react-bootstrap/Modal";
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
- 
-function AddTodo({ setTodo, todo}) {
-    const [validated, setValidated] = useState(false);
-    const [date, setDate] = useState("")
-  const handleSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+
+function AddTodo({ setTodo, todo }) {
+  const [validated, setValidated] = useState(false);
+  const [date, setDate] = useState("");
+  const [desc, setDesc] = useState("");
+  const [titleErr, setTitleErr] = useState("");
+  const [dateErr, setDateErr] = useState("");
+
+  const currentDate = new Date();
+  const newD = currentDate.toISOString().substring(0, 10);
+
+  function titleHandler(e) {
+    let item = e.target.value;
+    if (item.length < 4) {
+      setTitleErr(true);
+    } else {
+      setTitleErr(false);
+    }
+    setTodo(item);
+  }
+
+  function dateHandler(e) {
+    let inputDate = e.target.value;
+    if (inputDate < newD) {
+      setDateErr(true);
+    } else {
+      setDateErr(false);
     }
 
-    setValidated(true);
-  };
+    setDate(inputDate);
+  }
 
-      const addTodo = async (e) => {
-        e.preventDefault();
-
-        const newTodo = {
-          todo: todo || null,
-          date: date || null,
-        };
-
-        try {
-          const docRef = await addDoc(collection(db, "todos"), {
-             ...newTodo
-          });
-
-          const currentDate = new Date();
-          const newD = currentDate.toISOString().substring(0, 10);
-
-          console.log(newD, "+", date);
-          window.location.reload();
-
-          if (newD === date) {
-                toast.success(todo)
-          }
-          console.log("Document written with ID: ", docRef.id);
-        //   console.log(Date)
-         } catch (e) {
-          console.error("Error adding document: ", e);
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (todo.length < 4) {
+      alert("invalid todo length");
+    } else if (date < newD) {
+      alert("Date is in the past, choose a future date");
+      console.log(newD);
+    } else {
+      const newTodo = {
+        todo: todo || null,
+        date: date || null,
+        desc: newD || null,
       };
 
+      try {
+        const docRef = await addDoc(collection(db, "todos"), {
+          ...newTodo,
+        });
+
+        console.log(newD, "+", date);
+        window.location.reload();
+
+        console.log(docRef);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
+  };
+
   return (
-    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>Modal heading</Modal.Title>
       </Modal.Header>
-      <Container className="center bg-info p-5">
+      <Container className="center p-5">
         <Row className="mb-3 mx-auto">
           <Form.Group as={Col} md="12" controlId="validationCustom01">
             <Form.Label>Todo</Form.Label>
@@ -66,22 +85,46 @@ function AddTodo({ setTodo, todo}) {
               type="text"
               className="input"
               placeholder="What do you have to do today?"
-              onChange={(e) => setTodo(e.target.value)}
+              onChange={titleHandler}
             />
+            <span>
+              {titleErr ? (
+                <p className="error">
+                  Title needs to be more than 4 characters
+                </p>
+              ) : null}
+            </span>
+
+            <Form.Label>Enter Date</Form.Label>
             <Form.Control
               required
               type="date"
               className="input my-2"
               placeholder="What do you have to do today?"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={dateHandler}
             />
+
+            <span>
+              {dateErr ? (
+                <p className="error">Date needs to be in the future</p>
+              ) : null}
+            </span>
+
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Enter Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                onChange={(e) => setDesc(e.target.value)}
+              />
+            </Form.Group>
           </Form.Group>
         </Row>
-
-        <Button type="submit" onClick={addTodo}>
-          Submit form
-        </Button>
+        <Button type="submit">Submit form</Button>
       </Container>
     </Form>
   );
