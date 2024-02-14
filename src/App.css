@@ -37,10 +37,7 @@
   }
 }
 
-.w-80 {
-  /* width: 85%; */
-}
-
+ 
  
 
 .no-wrap{
@@ -53,3 +50,13 @@
   margin: 0;
 }
 
+.error {
+  color: red;
+}
+
+.circle {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  border: 2px solid black;
+}

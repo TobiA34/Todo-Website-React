@@ -27,8 +27,6 @@ import DropdownButton from "react-bootstrap/DropdownButton";
           completed: !todo.completed
        })
        window.location.reload();
-
-     
   };
 
  
@@ -114,12 +112,9 @@ const sortDSC = () => {
                       direction="vertical"
                       gap={3}
                     >
-                      <div>
-                        <input
-                          onChange={() => toggleComplete(todo)}
-                          type="checkbox"
-                          checked={todo.completed ? "checked" : ""}
-                        />
+                      <div className="circle">
+                  
+                        <i className="fas fa-ticket"></i>
                       </div>
                       <div className="d-flex gap-2">
                         <DeleteTodo todo={todo} />
@@ -130,7 +125,11 @@ const sortDSC = () => {
                   <CardBody>
                     <div className="d-flex  justify-content-between gap-3 bg">
                       <div>
-                        <i className="fas fa-ticket"></i>
+                        <input
+                          onChange={() => toggleComplete(todo)}
+                          type="checkbox"
+                          checked={todo.completed ? "checked" : ""}
+                        />
                       </div>
                       <div>
                         <p key={i} className="w-80 align-self-center">
