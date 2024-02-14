@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Card, CardBody, Stack } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -12,15 +12,24 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
  const TodoList = () => {
-   const [todoName, setTodo] = useState("");
+   const [title, setTodo] = useState("");
    const [todos, setTodos] = useState([]);
    const [show, setShow] = useState(false);
    const [query, setQuery] = useState("");
    const [order, setOrder] = useState("ASC");
+    const [isCompleted, setIsCompleted] = useState(false);
 
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
 
+  const toggleComplete = async (todo) => {
+       await updateDoc(doc(db,'todos',todo.id),{
+          completed: !todo.completed
+       })
+       window.location.reload();
+
+     
+  };
 
  
     const fetchPost = async () => {
@@ -32,13 +41,13 @@ import DropdownButton from "react-bootstrap/DropdownButton";
        ))
     setTodos(todos);
     }
+ 
 
-    
      
    
     useEffect(()=>{
         fetchPost();
-    }, [])
+     }, [])
 
 
 const sortASC = () => {
@@ -72,7 +81,7 @@ const sortDSC = () => {
               aria-hidden="true"
             ></i>
             <Modal show={show} onHide={handleClose}>
-              <AddTodo setTodo={setTodo} todo={todoName} />
+              <AddTodo setTodo={setTodo} todo={title} />
             </Modal>
           </div>
           <DropdownButton
@@ -83,6 +92,7 @@ const sortDSC = () => {
             <Dropdown.Item onClick={() => sortASC()}>ASC</Dropdown.Item>
             <Dropdown.Item onClick={() => sortDSC()}>DSC</Dropdown.Item>
           </DropdownButton>
+          <h1>You have {todos.length} todo</h1>
           <SearchBar placeholder={"Search Todo"} setQuery={setQuery} />
 
           <div className="todo-content ">
@@ -100,10 +110,17 @@ const sortDSC = () => {
                 <Card className="my-3">
                   <CardBody>
                     <div
-                      className="d-flex justify-content-end  align-items-center"
+                      className="d-flex justify-content-between align-items-center"
                       direction="vertical"
                       gap={3}
                     >
+                      <div>
+                        <input
+                          onChange={() => toggleComplete(todo)}
+                          type="checkbox"
+                          checked={todo.completed ? "checked" : ""}
+                        />
+                      </div>
                       <div className="d-flex gap-2">
                         <DeleteTodo todo={todo} />
                         <EditTodo todo={todo} setTodo={setTodo} />

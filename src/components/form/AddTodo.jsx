@@ -3,34 +3,36 @@ import { Container } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import Modal from "react-bootstrap/Modal";
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
+  
  
 function AddTodo({ setTodo, todo}) {
     const [validated, setValidated] = useState(false);
     const [date, setDate] = useState("")
+    const [desc, setDesc] = useState("")  
+
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
     }
-
     setValidated(true);
   };
 
-      const addTodo = async (e) => {
+    const addTodo = async (e) => {
         e.preventDefault();
 
         const newTodo = {
           todo: todo || null,
           date: date || null,
-        };
-
+          desc: desc || null,
+         };
+        
         try {
           const docRef = await addDoc(collection(db, "todos"), {
              ...newTodo
@@ -45,8 +47,8 @@ function AddTodo({ setTodo, todo}) {
           if (newD === date) {
                 toast.success(todo)
           }
-          console.log("Document written with ID: ", docRef.id);
-        //   console.log(Date)
+    
+          console.log(docRef)
          } catch (e) {
           console.error("Error adding document: ", e);
         }
@@ -68,6 +70,8 @@ function AddTodo({ setTodo, todo}) {
               placeholder="What do you have to do today?"
               onChange={(e) => setTodo(e.target.value)}
             />
+            <Form.Label>Enter Date</Form.Label>
+
             <Form.Control
               required
               type="date"
@@ -76,9 +80,21 @@ function AddTodo({ setTodo, todo}) {
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
-          </Form.Group>
-        </Row>
 
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Enter Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                onChange={(e) => setDesc(e.target.value)}
+              />
+            </Form.Group>
+          </Form.Group>
+      
+        </Row>
         <Button type="submit" onClick={addTodo}>
           Submit form
         </Button>
