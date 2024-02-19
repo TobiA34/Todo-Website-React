@@ -10,13 +10,15 @@ import Modal from "react-bootstrap/Modal";
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
+import { ChromePicker } from "react-color";
 
 function AddTodo({ setTodo, todo }) {
-  const [validated, setValidated] = useState(false);
   const [date, setDate] = useState("");
   const [desc, setDesc] = useState("");
   const [titleErr, setTitleErr] = useState("");
   const [dateErr, setDateErr] = useState("");
+  const [color, setColor] = useState("");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const currentDate = new Date();
   const newD = currentDate.toISOString().substring(0, 10);
@@ -54,6 +56,7 @@ function AddTodo({ setTodo, todo }) {
         todo: todo || null,
         date: date || null,
         desc: newD || null,
+        color: color || null,
       };
 
       try {
@@ -123,6 +126,21 @@ function AddTodo({ setTodo, todo }) {
               />
             </Form.Group>
           </Form.Group>
+
+          <button
+            onClick={() =>
+              setShowColorPicker((showColorPicker) => !showColorPicker)
+            }
+          >
+            {showColorPicker ? "Close color picker" : "Open Color picker"}
+          </button>
+          {showColorPicker && (
+            <ChromePicker
+              color={color}
+              onChange={(updatedColor) => setColor(updatedColor.hex)}
+            />
+          )}
+          <h2>You picked {color}</h2>
         </Row>
         <Button type="submit">Submit form</Button>
       </Container>
