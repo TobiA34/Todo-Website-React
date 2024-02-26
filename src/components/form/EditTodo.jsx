@@ -35,7 +35,7 @@ import Modal from "react-bootstrap/Modal";
         console.log(myDocumentData.date);
 
        // Define the document reference
-       const myDocRef = doc(db, "todos",todo.id);
+       const myDocRef = doc(db, "all",todo.id);
 
        // Add or update the document
        await setDoc(myDocRef, myDocumentData);
