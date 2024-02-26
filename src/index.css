@@ -86,3 +86,33 @@ input {
   font: inherit;
   cursor: pointer;
 }
+
+.nav-links {
+  text-decoration: none;
+  color: black;
+  margin: 10px 0;
+  border-bottom: 2px solid black ;
+ 
+}
+
+.h-50 {
+  height: 50%;
+}
+
+.remove-link-style {
+  text-decoration: none;
+}
+
+.underline {
+    text-decoration: line-through;
+}
+
+.rounded-border {
+  border: 2px solid white;
+  border-radius: 50%;
+ }
+
+ .bg-blue{background: cyan;}
+ .bg-orange{background: orangered;}
+ /* .bg-grey{background: grey;} */
+ .bg-yellow{background: yellow;}

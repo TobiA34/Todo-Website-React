@@ -100,16 +100,17 @@ const TodoList = () => {
             })
             .map((todo, i) => (
               <Card
-                className="my-3"
-                style={{ backgroundColor: `${todo.color}` }}
+                className={todo.completed ? "underline" : null}
+                style={{ backgroundColor: `${todo.color}`, margin: "30px 0" }}
               >
                 <CardBody>
                   <div
+                 
                     className="d-flex justify-content-between align-items-center"
                     direction="vertical"
                     gap={3}
                   >
-                    <div className="circle">
+                    <div >
                       <i className="fas fa-ticket"></i>
                     </div>
                     <div className="d-flex gap-2">

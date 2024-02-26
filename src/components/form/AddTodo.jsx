@@ -97,8 +97,21 @@ function AddTodo({ setTodo, todo }) {
                 </p>
               ) : null}
             </span>
-
-            <Form.Label>Enter Date</Form.Label>
+            <button
+            className="my-4"
+              onClick={() =>
+                setShowColorPicker((showColorPicker) => !showColorPicker)
+              }
+            >
+              {showColorPicker ? "Close color picker" : "Open Color picker"}
+            </button>
+            {showColorPicker && (
+              <ChromePicker
+                color={color}
+                onChange={(updatedColor) => setColor(updatedColor.hex)}
+              />
+            )}
+             <br/> <Form.Label>Enter Date</Form.Label>
             <Form.Control
               required
               type="date"
@@ -126,21 +139,6 @@ function AddTodo({ setTodo, todo }) {
               />
             </Form.Group>
           </Form.Group>
-
-          <button
-            onClick={() =>
-              setShowColorPicker((showColorPicker) => !showColorPicker)
-            }
-          >
-            {showColorPicker ? "Close color picker" : "Open Color picker"}
-          </button>
-          {showColorPicker && (
-            <ChromePicker
-              color={color}
-              onChange={(updatedColor) => setColor(updatedColor.hex)}
-            />
-          )}
-          <h2>You picked {color}</h2>
         </Row>
         <Button type="submit">Submit form</Button>
       </Container>
