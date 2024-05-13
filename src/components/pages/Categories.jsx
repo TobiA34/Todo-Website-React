@@ -1,45 +1,47 @@
-
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Link } from 'react-router-dom';
-import { collection, doc, getDocs, updateDoc,query, where } from "firebase/firestore";
+import { Link } from "react-router-dom";
+import { collection, getDocs, addDoc, query, where, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 function Categories() {
+  const [todos, setTodos] = useState([]);
+  const [completedTasks, setCompletedTask] = useState([]);
+  const [scheduleTodos, setScheduleTodos] = useState([]);
+  const [todayTasks, setTodayTask] = useState([]);
+  const [customCategory, setCustomCategory] = useState("");
+    const [customCategories, setCustomCategories] = useState([]);
+ 
+  const currentDate = new Date();
+  const newD = currentDate.toISOString().substring(0, 10);
 
-      const [todos, setTodos] = useState([]);
-      const [completedTasks, setCompletedTask] = useState([]);
-    const [scheduleTodos, setScheduleTodos] = useState([]);
-    const [todayTasks, setTodayTask] = useState([]);
-    const [customLists, setCustomLists] = useState([])
-    const currentDate = new Date(); 
-    const newD = currentDate.toISOString().substring(0, 10);
+  
 
-      const fetchPost = async () => {
-        const querySnapshot = await getDocs(collection(db, "todos"));
-        const todos = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setTodos(todos);
-      };
+  const fetchPost = async () => {
+    const querySnapshot = await getDocs(collection(db, "todos"));
+    const todos = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setTodos(todos);
+  };
 
-      const getCompeletedTodo = async () => {
-        const citiesRef = collection(db, "todos");
+  const getCompeletedTodo = async () => {
+    const citiesRef = collection(db, "todos");
 
-        const q = query(citiesRef, where("completed", "==", true));
+    const q = query(citiesRef, where("completed", "==", true));
 
-        const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-        const completedTasks = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+    const completedTasks = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-        setCompletedTask(completedTasks);
-      };
+    setCompletedTask(completedTasks);
+  };
 
   const getScheduledTodo = async () => {
     const todosRef = collection(db, "todos");
@@ -47,10 +49,6 @@ function Categories() {
     const q = query(todosRef, where("date", ">=", newD));
 
     const querySnapshot = await getDocs(q);
-    // querySnapshot.forEach((doc) => {
-    // // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, " => ", doc.data());
-    // });
     const scheduleTodos = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -59,28 +57,64 @@ function Categories() {
     setScheduleTodos(scheduleTodos);
   };
 
-        const getTodayTodo = async () => {
-        const todosRef = collection(db, "todos");
+  const getTodayTodo = async () => {
+    const todosRef = collection(db, "todos");
 
-        const q = query(todosRef, where("date", "==", newD));
+    const q = query(todosRef, where("date", "==", newD));
 
-        const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-        const todayTasks = querySnapshot.docs.map((doc) => ({
+    const todayTasks = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setTodayTask(todayTasks);
+  };
+
+ 
+    const createCustomCategory = async (e) => {
+      e.preventDefault();
+
+      const customCategories = {
+        title: customCategory || null,
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, "customCategories"), {
+          ...customCategories,
+        });
+
+        window.location.reload();
+
+        console.log(docRef);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    };
+
+      const getCustomCategory = async () => {
+        const querySnapshot = await getDocs(collection(db, "customCategories"));
+        const customCategories = querySnapshot.docs.map((doc) => (
+           {
           id: doc.id,
           ...doc.data(),
         }));
-
-        setTodayTask(todayTasks);
+        customCategories.map((item) =>{
+         console.log(item.id)
+         
+        })
+ 
+        setCustomCategories(customCategories);
       };
 
-      useEffect(() =>{
-        fetchPost()
-        getCompeletedTodo()
-        getScheduledTodo()
-      },[])
-
-
+  useEffect(() => {
+    fetchPost();
+    getCompeletedTodo();
+    getScheduledTodo();
+    getTodayTodo();
+    getCustomCategory();
+   }, []);
 
   return (
     <Container>
@@ -162,8 +196,42 @@ function Categories() {
         <Col>
           <hr />
           <h1 className="ms-4">Custom List</h1>
+          <form  onSubmit={createCustomCategory} className="d-flex align-items-center justify-content-between gap-5">
+            <input
+            placeholder="Create a category"
+              defaultValue={customCategory}
+              onChange={(e) => {
+                setCustomCategory(e.target.value);
+              }}
+            />
+
+            <button class="btn btn-primary" >Add</button>
+          </form>
         </Col>
       </Row>
+      {customCategories.map((customCategory) => {
+        return (
+          <div>
+            <Link className="remove-link-style" to={`/category/:${customCategory.id}`}>
+              <Col
+                xs={11}
+                sm={8}
+                md={8}
+                lg={8}
+                xl={8}
+                className="border border-dark ms-1 my-4 rounded p-3"
+              >
+                <div className="d-flex justify-content-between align-items-center my-3">
+                  <i class="fa-regular fa-circle-check  fa-2x rounded-border p-2 bg-blue"></i>
+                  <h1>{todayTasks.length}</h1>
+                </div>
+                <h1 className="my-3">{customCategory.title}</h1>
+              </Col>
+            </Link>
+          </div>
+        );
+      })}
+
       {/* <Row>
         <Col sm>sm=true</Col>
         <Col sm>sm=true</Col>
@@ -173,4 +241,4 @@ function Categories() {
   );
 }
 
-export default Categories
+export default Categories;

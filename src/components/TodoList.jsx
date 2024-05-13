@@ -45,7 +45,7 @@ const TodoList = () => {
   const sortASC = () => {
     if (order === "ASC") {
       const sorted = [...todos].sort((a, b) =>
-        a["todo"].toLowerCase() > b["todo"].toLowerCase() ? 1 : -1
+        a["todo"]?.toLowerCase() > b["todo"]?.toLowerCase() ? 1 : -1
       );
       setTodos(sorted);
       setOrder("DSC");
@@ -55,7 +55,7 @@ const TodoList = () => {
   const sortDSC = () => {
     if (order === "DSC") {
       const sorted = [...todos].sort((a, b) =>
-        a["todo"].toLowerCase() < b["todo"].toLowerCase() ? 1 : -1
+        a["todo"]?.toLowerCase() < b["todo"].toLowerCase() ? 1 : -1
       );
       setTodos(sorted);
       setOrder("ASC");
@@ -93,7 +93,7 @@ const TodoList = () => {
               if (query === "") {
                 return item;
               } else if (
-                item.todo.toLowerCase().includes(query.toLowerCase())
+                item.todo?.toLowerCase().includes(query?.toLowerCase())
               ) {
                 return item;
               }

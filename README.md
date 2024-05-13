@@ -10,19 +10,13 @@ FEATURES TO ADD
 Basically copy the apple app, like i can create a category or group and give it an icon on colour etc.
 - export react to react native 
 
-Scheduled
------------
-get todos where date > date.now 
-display todo in a card
+ Custom category
+ -----------------
 
-Today
------------
-get todos where date == date.now 
-display todo in a card
+ Tap on custom category use params to get the id
+ and use id as a prop
 
-Custom category
-----------------
+ custom category -> custom todo -> todo info
 
-First allow user to create category (collection)
-inside category have input field and using collection name create todos
 
+ create a collection called custom todo which will hold the todo.
